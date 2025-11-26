@@ -14,6 +14,7 @@ import Constants from 'expo-constants';
 // import { useFonts } from 'expo-font';
 import { useFonts } from 'expo-font';
 import { useStoreToken } from './src/hooks/mutation/user-action-mutation';
+import './src/config/firebase';
 // import {useFonts}
 
 Notifications.setNotificationHandler({
