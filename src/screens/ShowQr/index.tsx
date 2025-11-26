@@ -1,0 +1,1 @@
+export {ShowQr} from './ShowQr'

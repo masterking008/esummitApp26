@@ -1,0 +1,1 @@
+// Logo query removed - using static logo only

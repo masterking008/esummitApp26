@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "690312482092",
+    "project_id": "e-summit-app",
+    "storage_bucket": "e-summit-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690312482092:android:62bf655fd51b10e975f089",
+        "android_client_info": {
+          "package_name": "com.subhamagr.Esummit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhEqIhUUO-wC23r4bm_xYwK9nNA0Dl35c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

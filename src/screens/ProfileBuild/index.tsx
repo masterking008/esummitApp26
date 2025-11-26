@@ -1,0 +1,7 @@
+export { BuildProfileScreen } from './BuildProfile'
+export {StartupProfile} from './StartupProfile'
+export {StudentProfile} from './StudentProfile'
+export {ProfessionalProfile} from './ProfessionalProfile'
+export {InvestorProfile} from './InvestorProfile'
+export {MentorProfile} from './MentorProfile'
+export {EditProfile} from './EditProfile'
