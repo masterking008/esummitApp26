@@ -3,8 +3,8 @@ import { NativeViewGestureHandler, GestureHandlerRootView } from 'react-native-g
 import { Provider as PaperProvider } from 'react-native-paper';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar, SafeAreaView } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar, Platform } from 'react-native';
 import AppScreen from './Screen';
 // import SplashScreen from 'react-native-splash-screen';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -38,10 +38,14 @@ export default function AppNavigation() {
           <NavigationContainer>
             {/* <GestureHandlerRootView> */}
             <SafeAreaProvider>
-              <SafeAreaView style={{flex: 1, backgroundColor: '#121212'}}>
-              <StatusBar barStyle={'light-content'} backgroundColor="#05020E" />
-              {/* <StatusBar barStyle={'light-content'} backgroundColor="#141415" hidden /> */}
-              <AppScreen />
+              <SafeAreaView style={{flex: 1, backgroundColor: '#121212'}} edges={['top', 'left', 'right', 'bottom']}>
+                <StatusBar 
+                  barStyle={'light-content'} 
+                  backgroundColor="#05020E" 
+                  translucent={false}
+                  hidden={false}
+                />
+                <AppScreen />
               </SafeAreaView>
             {/* <SafeAreaView> */}
             {/* </SafeAreaView> */}
