@@ -22,6 +22,7 @@ import CrossSvg from '../../components/svgs/cross';
 import { useSchedule } from '../../hooks/query/other-query';
 import { FLOW_STAGES } from '../../contants';
 import { useFlowStore } from '../../store/flow-store';
+import { useProfileStore } from '../../store/profile-store';
 import { PRODUCTION_BASE_URL } from '../../api/base';
 
 
@@ -43,6 +44,7 @@ export const More = () => {
   const navigation = useNavigation();
 
   const setFlow = useFlowStore(state => state.setFlow);
+  const isSignedIn = useProfileStore(state => state.isSignedIn);
 
 
 
@@ -151,21 +153,25 @@ export const More = () => {
             </View>
             <Divider style={styles.divider} />
 
-            {/* New Delete Account Button */}
-            <View style={styles.content1}>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingRight: 16,
-                }}
-                onPress={showDeleteModal}
-              >
-                <Text style={styles.follow}>DELETE ACCOUNT</Text>
-                <List.Icon icon="chevron-right" color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
-            <Divider style={styles.divider} />
+            {/* Delete Account Button - only show if signed in */}
+            {isSignedIn && (
+              <>
+                <View style={styles.content1}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingRight: 16,
+                    }}
+                    onPress={showDeleteModal}
+                  >
+                    <Text style={styles.follow}>DELETE ACCOUNT</Text>
+                    <List.Icon icon="chevron-right" color="#FFFFFF" />
+                  </TouchableOpacity>
+                </View>
+                <Divider style={styles.divider} />
+              </>
+            )}
 
             {Others === undefined || Others === null ? (
               <></>

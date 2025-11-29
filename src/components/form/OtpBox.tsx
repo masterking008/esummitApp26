@@ -8,6 +8,7 @@ import {
 } from 'react-native-confirmation-code-field';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from 'react-native-toast-notifications';
+import { useNavigation } from '@react-navigation/native';
 import { ButtonBox as Button } from './Button';
 import { FLOW_STAGES } from '../../contants';
 import { useVerifyOtpMutation } from '../../hooks/mutation/user-action-mutation';
@@ -29,6 +30,7 @@ export const OtpBox = (props: OtpBoxProps) => {
 
   const setProfile = useProfileStore((state) => state.setProfile);
   const toast = useToast();
+  const navigation = useNavigation();
   const { mutateAsync: verifyOtpData } = useVerifyOtpMutation();
   const email = useProfileStore((state) => state.email);
   const setFlow = useFlowStore((state) => state.setFlow);
@@ -36,6 +38,8 @@ export const OtpBox = (props: OtpBoxProps) => {
   const [isValid, setValid] = useState(false);
   const [isButtonDisabled, setButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [canResend, setCanResend] = useState(true);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -49,12 +53,34 @@ export const OtpBox = (props: OtpBoxProps) => {
     return () => clearInterval(interval);
   }, [timer]);
 
+  useEffect(() => {
+    let resendInterval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      resendInterval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(resendInterval);
+  }, [resendTimer]);
+
   const handleVerify = async () => {
+    if (!value || value.trim() === '') {
+      toast.show('Please enter OTP', { type: 'danger' });
+      return;
+    }
+    
     console.log('handleVerify called'); // Debug log
     setButtonDisabled(true); // Disable the button
     setTimer(15); // Start the 15-second timer
 
     try {
+      console.log('Sending OTP verification with:', { email, value }); // Debug log
       await verifyOtpData({ email, value }).then(async (res) => {
         console.log('Response received:', res); // Debug log
 
@@ -77,6 +103,7 @@ export const OtpBox = (props: OtpBoxProps) => {
             });
             setFlow(FLOW_STAGES.MAIN);
             toast.show('Signed In as a guest user!', { type: 'success' });
+            navigation.navigate('Home' as never);
           } else {
             let summitPassLevel;
             switch (res.data.user.summit_pass) {
@@ -123,6 +150,7 @@ export const OtpBox = (props: OtpBoxProps) => {
 
             if (res.profileBuilt) {
               setFlow(FLOW_STAGES.MAIN);
+              navigation.navigate('Home' as never);
             } else {
               setFlow(FLOW_STAGES.PROFILE);
             }
@@ -171,8 +199,19 @@ export const OtpBox = (props: OtpBoxProps) => {
         />
       </View>
       <View>
-        <TouchableOpacity onPress={props.handleResend}>
-          <Text style={styles.resend}>Resend OTP</Text>
+        <TouchableOpacity 
+          onPress={() => {
+            if (canResend) {
+              setCanResend(false);
+              setResendTimer(30);
+              props.handleResend();
+            }
+          }}
+          disabled={!canResend}
+        >
+          <Text style={[styles.resend, { opacity: canResend ? 1 : 0.5 }]}>
+            {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
+          </Text>
         </TouchableOpacity>
         <Button
           title={timer > 0 ? `Wait ${timer}s` : 'Verify and Continue'}

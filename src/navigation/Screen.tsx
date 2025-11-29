@@ -33,24 +33,29 @@ export default function AppScreen() {
   const setFlow = useFlowStore(state => state.setFlow)
   const isAdmin = useProfileStore(state => state.isAdmin);
   const email = useProfileStore(state => state.email)
+  const isSignedIn = useProfileStore(state => state.isSignedIn);
 
   const { mutateAsync: storeToken } = useStoreToken();
 
   async function getPushToken() {
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log("expo token:", token);
-    storeToken({ expotoken: token, email: email }).then(data => {
-      if (data.success) {
-        console.log('Token Stored')
-      } else {
-        console.log('Some error occured')
-      }
-    });
+    if (email) {
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log("expo token:", token);
+      storeToken({ expotoken: token, email: email }).then(data => {
+        if (data.success) {
+          console.log('Token Stored')
+        } else {
+          console.log('Some error occured')
+        }
+      });
+    }
   }
 
   useEffect(() => {
-    getPushToken()
-  }, [])
+    if (isSignedIn) {
+      getPushToken()
+    }
+  }, [isSignedIn, email])
 
   return (
     <Stack.Navigator
@@ -79,8 +84,71 @@ export default function AppScreen() {
             headerShown: false,
           }}
         />
-      ) : flow == FLOW_STAGES.AUTH ? (
+      ) : flow == FLOW_STAGES.PROFILE ? (
         <>
+          {/* Public screens */}
+          <Stack.Screen name="Home" component={HomePage}/>
+          <Stack.Screen name="Map" component={Maps} />
+          <Stack.Screen name="Event" component={Event} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="Sponsors" component={Sponsors} />
+          <Stack.Screen name="Agenda" component={Agenda} />
+          <Stack.Screen name="More" component={More} />
+          
+          {/* Profile building screens */}
+          <Stack.Screen name="Connect" component={BuildProfileScreen} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="StartupProfile" component={StartupProfile} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="StudentProfile" component={StudentProfile} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="MentorProfile" component={MentorProfile} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="InvestorProfile" component={InvestorProfile} options={{
+            headerShown: false,
+          }} />
+        </>
+      ) : flow == FLOW_STAGES.MAIN ? (
+        <>
+          {/* Public screens - accessible without login */}
+          <Stack.Screen name="Home" component={HomePage}/>
+          <Stack.Screen name="Map" component={Maps} />
+          <Stack.Screen name="Event" component={Event} options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="Sponsors" component={Sponsors} />
+          <Stack.Screen name="Agenda" component={Agenda} />
+          <Stack.Screen name="More" component={More} />
+          
+          {/* Authenticated screens */}
+          {isSignedIn && (
+            <>
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{
+                  headerShown: true,
+                }}
+              />
+              <Stack.Screen name="ConnectMain" component={ConnectMain} options={{
+                headerShown: false,
+              }} />
+              <Stack.Screen name="SingleConnect" component={Connect} />
+              <Stack.Screen name="YourConnect" component={YourConnect} />
+              <Stack.Screen name="ShowQr" component={ShowQr} />
+              <Stack.Screen name="EditProfile" component={EditProfile} />
+            </>
+          )}
+          
+          {/* Auth screens - always available */}
           <Stack.Screen
             name="SignIn"
             component={SignIn}
@@ -103,52 +171,38 @@ export default function AppScreen() {
             }}
           />
         </>
-      ) : flow == FLOW_STAGES.MAIN ? (
+      ) : (
         <>
+          {/* Auth flow screens + public screens for guest access */}
           <Stack.Screen name="Home" component={HomePage}/>
-          <Stack.Screen
-            name="Profile"
-            component={Profile}
-            options={{
-              headerShown: true,
-            }}
-          />
           <Stack.Screen name="Map" component={Maps} />
-          <Stack.Screen name="More" component={More} />
           <Stack.Screen name="Event" component={Event} options={{
             headerShown: false,
           }} />
           <Stack.Screen name="Sponsors" component={Sponsors} />
           <Stack.Screen name="Agenda" component={Agenda} />
-          <Stack.Screen name="ConnectMain" component={ConnectMain} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="SingleConnect" component={Connect} />
-          <Stack.Screen name="YourConnect" component={YourConnect} />
-          <Stack.Screen name="ShowQr" component={ShowQr} />
-          <Stack.Screen name="EditProfile" component={EditProfile} />
-          {/* <Stack.Screen name="TimeTable" component={TimeTable} /> */}
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Connect" component={BuildProfileScreen} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="StartupProfile" component={StartupProfile} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="StudentProfile" component={StudentProfile} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="MentorProfile" component={MentorProfile} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="InvestorProfile" component={InvestorProfile} options={{
-            headerShown: false,
-          }} />
+          <Stack.Screen name="More" component={More} />
+          <Stack.Screen
+            name="SignIn"
+            component={SignIn}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Otp"
+            component={Otp}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
         </>
       )}
 

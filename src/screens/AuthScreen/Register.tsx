@@ -46,10 +46,9 @@ export const RegisterScreen = () => {
       !confirmPassword ||
       !firstName ||
       !lastName ||
-      !contactNumber ||
       !profession
     ) {
-      Alert.alert("Error", "All fields are required.");
+      Alert.alert("Error", "Please fill in all required fields.");
       return;
     }
     if (password !== confirmPassword) {
@@ -58,17 +57,21 @@ export const RegisterScreen = () => {
     }
 
     try {
-      const response = await axios.post(`${PRODUCTION_BASE_URL}/user/register/`, {
+      const registrationData = {
         email,
         password,
         firstName,
         lastName,
-        contact: contactNumber,
         profession,
         state: "App",
         country: "App",
         pincode: "111111",
-      }, {
+      };
+      
+      // Send default contact if empty to avoid backend integer conversion error
+      registrationData.contact = contactNumber.trim() || "0000000000";
+      
+      const response = await axios.post(`${PRODUCTION_BASE_URL}/user/register/`, registrationData, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -168,12 +171,14 @@ export const RegisterScreen = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contact Number</Text>
+          <Text style={styles.label}>Contact Number (Optional)</Text>
           <TextInput
             value={contactNumber}
             onChangeText={setContactNumber}
             keyboardType="phone-pad"
             style={styles.input}
+            placeholder="Enter your contact number"
+            placeholderTextColor="#666"
           />
         </View>
         <TouchableOpacity style={styles.pickerContainer} onPress={() => setShowPicker(true)}>

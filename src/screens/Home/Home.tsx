@@ -155,20 +155,21 @@ export const Home = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const pagerRef = useRef(null);
-  const highlights = EventData?.data.highlights;
+  const highlights = EventData?.data?.highlights || [];
 
   useEffect(() => {
     const totalpages = highlights?.length || 0;
-    const autoSlideInterval = setInterval(() => {
-      const nextPage = (currentPage + 1) % totalpages;
-      setCurrentPage(nextPage);
-      pagerRef.current.setPage(nextPage);
-    }, 3000); // Adjust the interval (in milliseconds) based on your preference
+    if (totalpages > 0) {
+      const autoSlideInterval = setInterval(() => {
+        const nextPage = (currentPage + 1) % totalpages;
+        setCurrentPage(nextPage);
+        pagerRef.current?.setPage(nextPage);
+      }, 3000);
 
-    return () => {
-      // Clear the interval when the component unmounts
-      clearInterval(autoSlideInterval);
-    };
+      return () => {
+        clearInterval(autoSlideInterval);
+      };
+    }
   }, [currentPage, highlights]);
 
   return (
@@ -325,47 +326,51 @@ export const Home = () => {
                 <View style={styles.section}>
                   <Text style={styles.heading}>HIGHLIGHT SESSIONS</Text>
 
-                  <PagerView
-                    style={styles.pagerView}
-                    initialPage={0}
-                    onPageSelected={(event) =>
-                      setCurrentPage(event.nativeEvent.position)
-                    }
-                    ref={pagerRef}
-                  >
-                    {EventData?.data?.highlights?.map((item, index) => (
-                      <View key={index}>
-                        <Highlight
-                          url={item.image}
-                          alt={item.name}
-                          id={item.id}
-                          index={index}
-                          length={EventData?.data?.highlights?.length || 0}
-                          venue={item.venue.name}
-                          day={item.day}
-                          startTime={item.startTime}
-                          isLive={
-                            new Date(item.startTime) < new Date() &&
-                            new Date(item.endTime) > new Date()
-                          }
-                          navigation={navigation}
+                  {highlights.length > 0 && (
+                    <PagerView
+                      style={styles.pagerView}
+                      initialPage={0}
+                      onPageSelected={(event) =>
+                        setCurrentPage(event.nativeEvent.position)
+                      }
+                      ref={pagerRef}
+                    >
+                      {highlights.map((item, index) => (
+                        <View key={index}>
+                          <Highlight
+                            url={item.image}
+                            alt={item.name}
+                            id={item.id}
+                            index={index}
+                            length={highlights.length}
+                            venue={item.venue.name}
+                            day={item.day}
+                            startTime={item.startTime}
+                            isLive={
+                              new Date(item.startTime) < new Date() &&
+                              new Date(item.endTime) > new Date()
+                            }
+                            navigation={navigation}
+                          />
+                        </View>
+                      ))}
+                    </PagerView>
+                  )}
+                  {highlights.length > 0 && (
+                    <View style={styles.dots}>
+                      {Array(highlights.length).fill(0).map((_, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            styles.dot,
+                            {
+                              backgroundColor: currentPage === index ? '#ffe100' : '#fff',
+                            }
+                          ]}
                         />
-                      </View>
-                    )) || []}
-                  </PagerView>
-                  <View style={styles.dots}>
-                    {Array(EventData?.data?.highlights?.length || 0).fill(0).map((_, index) => (
-                      <View
-                        key={index}
-                        style={[
-                          styles.dot,
-                          {
-                            backgroundColor: currentPage === index ? '#ffe100' : '#fff',
-                          }
-                        ]}
-                      />
-                    ))}
-                  </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
 
                 <View style={styles.headcont2}>

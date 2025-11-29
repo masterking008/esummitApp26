@@ -31,7 +31,7 @@ const store: StateCreator<IProfileStore> = set => ({
   email: '',
   pass: '',
   qrcode: '',
-  isSignedIn: true,
+  isSignedIn: false,
   isAdmin: false,
   isGuest: false,
   setProfile: (profile: Partial<IProfileStates>) => set(profile),
@@ -49,6 +49,8 @@ const store: StateCreator<IProfileStore> = set => ({
       qrcode: '',
       pass: '',
       isAdmin: false,
+      isSignedIn: false,
+      isGuest: false,
     }),
   setIsSignedIn: (isSignedIn: boolean) => set({ isSignedIn }),
 });

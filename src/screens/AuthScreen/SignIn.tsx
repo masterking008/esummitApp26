@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
-import { Dimensions, Image, ScrollView, StyleSheet, Text, View, StatusBar } from "react-native";
+import { Dimensions, Image, ScrollView, StyleSheet, Text, View, StatusBar, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useToast } from "react-native-toast-notifications";
 import { TextInput } from "../../components/form";
@@ -61,6 +61,11 @@ export const SignInScreen = () => {
     }
   };
 
+  const handleContinueAsGuest = () => {
+    setFlow(FLOW_STAGES.MAIN);
+    navigation.navigate("Home" as never);
+  };
+
   // useEffect(() => {
   //   if(AsyncStorage.getItem('Esummit24email') != null || AsyncStorage.getItem('Esummit24email') != undefined){
   //     setFlow(FLOW_STAGES.MAIN)
@@ -105,6 +110,10 @@ export const SignInScreen = () => {
           onSubmit={handleSubmit}
         />
 
+        <TouchableOpacity style={styles.guestButton} onPress={handleContinueAsGuest}>
+          <Text style={styles.guestButtonText}>Continue as Guest</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
     // </ScrollView>
@@ -147,5 +156,20 @@ const styles = StyleSheet.create({
   logo: {
     width: 275,
     height: 125,
+  },
+  guestButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#FED606',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  guestButtonText: {
+    color: '#FED606',
+    fontSize: 16,
+    fontFamily: 'ProximaBold',
   },
 });

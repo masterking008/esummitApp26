@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import { useProfileStore } from '../../store/profile-store';
+import { useFlowStore } from '../../store/flow-store';
+import { FLOW_STAGES } from '../../contants';
 
 interface FooterProps {
   navigation: any;
@@ -15,6 +18,8 @@ interface TabItem {
 
 export const Footer: React.FC<FooterProps> = ({ navigation }) => {
   const route = useRoute();
+  const isSignedIn = useProfileStore(state => state.isSignedIn);
+  const setFlow = useFlowStore(state => state.setFlow);
 
   const tabs: TabItem[] = [
     { name: 'Home', route: 'Home', icon: require('../../assets/images/homeicon.png'), label: 'HOME' },
@@ -23,6 +28,16 @@ export const Footer: React.FC<FooterProps> = ({ navigation }) => {
     { name: 'More', route: 'More', icon: require('../../assets/images/moreicon.png'), label: 'MORE' },
   ];
 
+  const handleTabPress = (tab: TabItem) => {
+    if (tab.route === 'ConnectMain' && !isSignedIn) {
+      // Redirect to login for networking features
+      setFlow(FLOW_STAGES.AUTH);
+      navigation.navigate('SignIn');
+    } else {
+      navigation.navigate(tab.route);
+    }
+  };
+
   const renderTab = (tab: TabItem) => {
     const isActive = route.name === tab.route;
     
@@ -30,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({ navigation }) => {
       <TouchableOpacity
         key={tab.name}
         style={styles.tab}
-        onPress={() => navigation.navigate(tab.route)}
+        onPress={() => handleTabPress(tab)}
         activeOpacity={0.7}
       >
         <Image 

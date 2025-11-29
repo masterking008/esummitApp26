@@ -151,12 +151,14 @@ export const Splash = () => {
               }
             }
           } else {
-            setFlow(FLOW_STAGES.AUTH);
+            // Allow browsing without login - set to MAIN instead of AUTH
+            setFlow(FLOW_STAGES.MAIN);
           }
         });
       }
     } else {
-      setFlow(FLOW_STAGES.AUTH);
+      // Allow browsing without login - set to MAIN instead of AUTH
+      setFlow(FLOW_STAGES.MAIN);
     }
   };
 

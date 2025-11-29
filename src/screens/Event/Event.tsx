@@ -24,6 +24,8 @@ import {
 import { useEventById } from '../../hooks/query/events-query';
 import { useGetTagsAndReminder } from '../../hooks/query/user-query';
 import { useProfileStore } from '../../store/profile-store';
+import { useFlowStore } from '../../store/flow-store';
+import { FLOW_STAGES } from '../../contants';
 import { getTime, mapUrl } from '../../utils/helper';
 // import PushNotification from 'react-native-push-notification';
 import * as Notifications from 'expo-notifications';
@@ -37,6 +39,8 @@ export const Event = ({ route }) => {
 
   const email = useProfileStore(state => state.email);
   const name = useProfileStore(state => state.name);
+  const isSignedIn = useProfileStore(state => state.isSignedIn);
+  const setFlow = useFlowStore(state => state.setFlow);
 
   const { data: ReminderAndTagData, isLoading: ReminderAndTagLoading } =
     useGetTagsAndReminder(email, route.params.id);
@@ -74,22 +78,26 @@ export const Event = ({ route }) => {
   }, [ReminderAndTagLoading]);
 
   const handleScheduleNotification = async () => {
-    const description =
-      EventData?.data.name +
-      ' is starting in 15 minutes at ' +
-      EventData?.data.venue +
-      '.';
+    try {
+      const description =
+        EventData?.data.name +
+        ' is starting in 15 minutes at ' +
+        EventData?.data.venue +
+        '.';
 
-    const notificationcontent = {
-      title: EventData?.data.name,
-      body: description
+      const notificationcontent = {
+        title: EventData?.data.name,
+        body: description
+      }
+
+      const triggerDate = new Date(new Date(EventData?.data.startTime as string).getTime() - 15 * 60 * 1000);
+      await Notifications.scheduleNotificationAsync({
+        content: notificationcontent,
+        trigger: { type: 'date', date: triggerDate }
+      });
+    } catch (error) {
+      console.log('Notification scheduling error:', error);
     }
-
-    const triggerDate = new Date(new Date(EventData?.data.startTime as string).getTime() - 15 * 60 * 1000);
-    Notifications.scheduleNotificationAsync({
-      content: notificationcontent,
-      trigger: { type: 'date', date: triggerDate }
-    })
     // PushNotification.localNotificationSchedule({
     //   channelId: 'fcm_fallback_notification_channel',
     //   title: EventData?.data.name,
@@ -107,6 +115,13 @@ export const Event = ({ route }) => {
   };
 
   const handleNotify = async () => {
+    if (!isSignedIn) {
+      toast.show('Please sign in to set notifications', { type: 'danger' });
+      setFlow(FLOW_STAGES.AUTH);
+      navigation.navigate('SignIn' as never);
+      return;
+    }
+    
     setReminder({ id: route.params.id, email: email }).then(data => {
       if (data.success) {
         handleScheduleNotification();
@@ -123,6 +138,13 @@ export const Event = ({ route }) => {
   };
 
   const handleTag = async (val: string) => {
+    if (!isSignedIn) {
+      toast.show('Please sign in to reserve a seat', { type: 'danger' });
+      setFlow(FLOW_STAGES.AUTH);
+      navigation.navigate('SignIn' as never);
+      return;
+    }
+    
     setTag({ id: route.params.id, email: email, tag: val }).then(data => {
       if (data.success) {
         if (val !== 'not going') {
@@ -154,9 +176,16 @@ export const Event = ({ route }) => {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.profileIcon}
-          onPress={() => navigation.navigate('Profile' as never)}
+          onPress={() => {
+            if (isSignedIn) {
+              navigation.navigate('Profile' as never);
+            } else {
+              setFlow(FLOW_STAGES.AUTH);
+              navigation.navigate('SignIn' as never);
+            }
+          }}
         >
-          <Text style={styles.profileiconText}>{name[0]}</Text>
+          <Text style={styles.profileiconText}>{isSignedIn ? name?.[0] || 'U' : 'L'}</Text>
         </TouchableOpacity>
       </View>
       
