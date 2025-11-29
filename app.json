@@ -41,7 +41,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.ecell.esummitapp26",
-      "buildNumber": "8",
+      "buildNumber": "10",
       "config": {
         "googleMapsApiKey": "AIzaSyBX4Ktw2PLyPVJJEf0AQKxwIN3b738C6JI"
       },
@@ -71,7 +71,7 @@
       ],
       "package": "com.ecell.esummitapp26",
       "googleServicesFile": "./src/google-services.json",
-      "versionCode": 21
+      "versionCode": 25
     },
     "web": {
       "favicon": "./assets/icon.png"
