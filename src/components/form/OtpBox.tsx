@@ -29,6 +29,7 @@ export const OtpBox = (props: OtpBoxProps) => {
   });
 
   const setProfile = useProfileStore((state) => state.setProfile);
+  const setProfileBuilt = useProfileStore((state) => state.setProfileBuilt);
   const toast = useToast();
   const navigation = useNavigation();
   const { mutateAsync: verifyOtpData } = useVerifyOtpMutation();
@@ -101,9 +102,8 @@ export const OtpBox = (props: OtpBoxProps) => {
               isSignedIn: true,
               isGuest: true,
             });
-            setFlow(FLOW_STAGES.MAIN);
+            setFlow(FLOW_STAGES.PROFILE);
             toast.show('Signed In as a guest user!', { type: 'success' });
-            navigation.navigate('Home' as never);
           } else {
             let summitPassLevel;
             switch (res.data.user.summit_pass) {
@@ -126,6 +126,8 @@ export const OtpBox = (props: OtpBoxProps) => {
                 summitPassLevel = 'Unknown';
             }
 
+            setProfileBuilt(res.profileBuilt);
+            
             if (res.data.user.isadmin) {
               console.log('Admin user detected');
               setProfile({
@@ -150,9 +152,10 @@ export const OtpBox = (props: OtpBoxProps) => {
 
             if (res.profileBuilt) {
               setFlow(FLOW_STAGES.MAIN);
-              navigation.navigate('Home' as never);
+              setTimeout(() => navigation.navigate('Home' as never), 100);
             } else {
               setFlow(FLOW_STAGES.PROFILE);
+              setTimeout(() => navigation.navigate('BuildProfile' as never), 100);
             }
           }
         }

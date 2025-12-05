@@ -160,7 +160,7 @@ export const BuildProfileScreen = () => {
             <View>
               <Text style={styles.label}>Select your Interests:</Text>
               <View style={styles.sectorContainer}>
-                {languages?.map((language) => (
+                {languages && languages.map((language) => (
                   <View key={language.value} style={styles.optionCont}>
                     <TouchableOpacity
                       onPress={() => toggleLanguage(language.value)}

@@ -9,6 +9,7 @@ interface IProfileStates {
   isSignedIn: boolean;
   isAdmin: boolean;
   isGuest: boolean;
+  profileBuilt: boolean;
 }
 
 interface IProfileMethods {
@@ -20,6 +21,7 @@ interface IProfileMethods {
   setIsSignedIn: (isSignedIn: boolean) => void;
   setIsAdmin: (isAdmin : boolean) => void;
   setIsGuest: (isGuest: boolean) => void;
+  setProfileBuilt: (profileBuilt: boolean) => void;
   reset: () => void;
 }
 
@@ -34,6 +36,7 @@ const store: StateCreator<IProfileStore> = set => ({
   isSignedIn: false,
   isAdmin: false,
   isGuest: false,
+  profileBuilt: false,
   setProfile: (profile: Partial<IProfileStates>) => set(profile),
   setName: (name: string) => set({ name }),
   setEmail: (email: string) => set({ email }),
@@ -41,6 +44,7 @@ const store: StateCreator<IProfileStore> = set => ({
   setQRCode: (qrcode: string) => set({ qrcode }),
   setIsAdmin : (isAdmin : boolean) => set({ isAdmin }),
   setIsGuest : (isGuest : boolean) => set({ isGuest }),
+  setProfileBuilt: (profileBuilt: boolean) => set({ profileBuilt }),
   reset: () =>
     set({
       image: null,
@@ -51,6 +55,7 @@ const store: StateCreator<IProfileStore> = set => ({
       isAdmin: false,
       isSignedIn: false,
       isGuest: false,
+      profileBuilt: false,
     }),
   setIsSignedIn: (isSignedIn: boolean) => set({ isSignedIn }),
 });

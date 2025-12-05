@@ -175,17 +175,10 @@ export const Event = ({ route }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity 
-          style={styles.profileIcon}
-          onPress={() => {
-            if (isSignedIn) {
-              navigation.navigate('Profile' as never);
-            } else {
-              setFlow(FLOW_STAGES.AUTH);
-              navigation.navigate('SignIn' as never);
-            }
-          }}
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
         >
-          <Text style={styles.profileiconText}>{isSignedIn ? name?.[0] || 'U' : 'L'}</Text>
+          <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
       </View>
       
@@ -303,7 +296,7 @@ const styles = StyleSheet.create({
     left: 15,
     zIndex: 10,
   },
-  profileIcon: {
+  backButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -316,11 +309,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  profileiconText: {
-    fontFamily: 'ProximaBold',
-    fontSize: 18,
+  backButtonText: {
+    fontSize: 20,
     color: '#1e1e1e',
-    textTransform: 'uppercase',
+    fontWeight: 'bold',
   },
   loadingContainer: {
     flex: 1,

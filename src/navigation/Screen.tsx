@@ -34,6 +34,7 @@ export default function AppScreen() {
   const isAdmin = useProfileStore(state => state.isAdmin);
   const email = useProfileStore(state => state.email)
   const isSignedIn = useProfileStore(state => state.isSignedIn);
+  const profileBuilt = useProfileStore(state => state.profileBuilt);
 
   const { mutateAsync: storeToken } = useStoreToken();
 
@@ -56,6 +57,14 @@ export default function AppScreen() {
       getPushToken()
     }
   }, [isSignedIn, email])
+
+  useEffect(() => {
+    if (isSignedIn && profileBuilt === false) {
+      setFlow(FLOW_STAGES.PROFILE)
+    } else if (isSignedIn && profileBuilt === true) {
+      setFlow(FLOW_STAGES.MAIN)
+    }
+  }, [isSignedIn, profileBuilt, setFlow])
 
   return (
     <Stack.Navigator
@@ -86,6 +95,11 @@ export default function AppScreen() {
         />
       ) : flow == FLOW_STAGES.PROFILE ? (
         <>
+          {/* Profile building screens - BuildProfile first */}
+          <Stack.Screen name="BuildProfile" component={BuildProfileScreen} options={{
+            headerShown: false,
+          }} />
+          
           {/* Public screens */}
           <Stack.Screen name="Home" component={HomePage}/>
           <Stack.Screen name="Map" component={Maps} />
@@ -95,11 +109,6 @@ export default function AppScreen() {
           <Stack.Screen name="Sponsors" component={Sponsors} />
           <Stack.Screen name="Agenda" component={Agenda} />
           <Stack.Screen name="More" component={More} />
-          
-          {/* Profile building screens */}
-          <Stack.Screen name="Connect" component={BuildProfileScreen} options={{
-            headerShown: false,
-          }} />
           <Stack.Screen name="StartupProfile" component={StartupProfile} options={{
             headerShown: false,
           }} />
@@ -115,6 +124,26 @@ export default function AppScreen() {
           <Stack.Screen name="InvestorProfile" component={InvestorProfile} options={{
             headerShown: false,
           }} />
+          
+          {/* Authenticated screens - needed during profile building */}
+          {isSignedIn && (
+            <>
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{
+                  headerShown: true,
+                }}
+              />
+              <Stack.Screen name="ConnectMain" component={ConnectMain} options={{
+                headerShown: false,
+              }} />
+              <Stack.Screen name="SingleConnect" component={Connect} />
+              <Stack.Screen name="YourConnect" component={YourConnect} />
+              <Stack.Screen name="ShowQr" component={ShowQr} />
+              <Stack.Screen name="EditProfile" component={EditProfile} />
+            </>
+          )}
         </>
       ) : flow == FLOW_STAGES.MAIN ? (
         <>
