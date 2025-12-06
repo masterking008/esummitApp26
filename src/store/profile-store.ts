@@ -10,6 +10,11 @@ interface IProfileStates {
   isAdmin: boolean;
   isGuest: boolean;
   profileBuilt: boolean;
+  hostelName: string | null;
+  roomNumber: string | null;
+  pinCode: string | null;
+  hostelLatitude: number | null;
+  hostelLongitude: number | null;
 }
 
 interface IProfileMethods {
@@ -37,6 +42,11 @@ const store: StateCreator<IProfileStore> = set => ({
   isAdmin: false,
   isGuest: false,
   profileBuilt: false,
+  hostelName: null,
+  roomNumber: null,
+  pinCode: null,
+  hostelLatitude: null,
+  hostelLongitude: null,
   setProfile: (profile: Partial<IProfileStates>) => set(profile),
   setName: (name: string) => set({ name }),
   setEmail: (email: string) => set({ email }),
@@ -56,6 +66,11 @@ const store: StateCreator<IProfileStore> = set => ({
       isSignedIn: false,
       isGuest: false,
       profileBuilt: false,
+      hostelName: null,
+      roomNumber: null,
+      pinCode: null,
+      hostelLatitude: null,
+      hostelLongitude: null,
     }),
   setIsSignedIn: (isSignedIn: boolean) => set({ isSignedIn }),
 });

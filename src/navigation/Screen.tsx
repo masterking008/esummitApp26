@@ -5,7 +5,7 @@ import { TransitionSpecs } from '@react-navigation/stack';
 import { Otp, SignIn } from '../screens/AuthScreen';
 import { HomePage } from '../screens/Home';
 import { Maps } from '../screens/Map';
-import { Profile, QRCode } from '../screens/Profile';
+import { Profile, QRCode, AccoQRCode } from '../screens/Profile';
 import { More, Sponsors } from '../screens/Other';
 import { Event } from '../screens/Event';
 import { useNavigation } from '@react-navigation/native';
@@ -235,9 +235,16 @@ export default function AppScreen() {
         </>
       )}
 
-      {isAdmin && <Stack.Screen name="QRCode" component={QRCode} options={{
+      {isAdmin && (
+        <>
+          <Stack.Screen name="QRCode" component={QRCode} options={{
             headerShown: false,
-          }}/>}
+          }}/>
+          <Stack.Screen name="AccoQRCode" component={AccoQRCode} options={{
+            headerShown: false,
+          }}/>
+        </>
+      )}
     </Stack.Navigator>
   );
 }

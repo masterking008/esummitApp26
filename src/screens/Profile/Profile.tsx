@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Image, ImageBackground, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ImageBackground, Linking, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Divider, List, Modal, Portal, ActivityIndicator } from 'react-native-paper';
 import { ProfileSection } from '../../components/profile';
@@ -16,6 +16,7 @@ import { useFlowStore } from '../../store/flow-store';
 export const Profile = () => {
   const [visible, setVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const [accoVisible, setAccoVisible] = useState(false);
 
   const hideModal = () => setVisible(false);
   const showLogoutModal = () => setLogoutVisible(true);
@@ -26,11 +27,25 @@ export const Profile = () => {
   const image = useProfileStore(state => state.image);
   const pass = useProfileStore(state => state.pass);
   const qrcode = useProfileStore(state => state.qrcode);
+  const hostelName = useProfileStore(state => state.hostelName);
+  const roomNumber = useProfileStore(state => state.roomNumber);
+  const pinCode = useProfileStore(state => state.pinCode);
+  const hostelLatitude = useProfileStore(state => state.hostelLatitude);
+  const hostelLongitude = useProfileStore(state => state.hostelLongitude);
   const setFlow = useFlowStore(state => state.setFlow);
   const isAdmin = useProfileStore(state => state.isAdmin);
   const reset = useProfileStore(state => state.reset);
 
   const isguest = useProfileStore(state => state.isGuest)
+
+  console.log('Profile accommodation data:', { hostelName, roomNumber, pinCode, hostelLatitude, hostelLongitude });
+
+  const openMaps = () => {
+    if (hostelLatitude && hostelLongitude) {
+      const url = `https://maps.google.com/?q=${hostelLatitude},${hostelLongitude}`;
+      Linking.openURL(url);
+    }
+  };
 
   const navigation = useNavigation();
 
@@ -55,11 +70,9 @@ export const Profile = () => {
       style={StyleSheet.absoluteFill}
       resizeMode="cover" // Adjust the image scaling ('cover', 'contain', or 'stretch')
     >
-      <View
-        //   useAngle
-        //   angle={-128.06}
-        style={styles.container}>
+      <View style={styles.container}>
         <Navbar navigation={navigation} />
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
         <Portal>
           <Modal
             visible={visible}
@@ -213,6 +226,30 @@ export const Profile = () => {
       </TouchableOpacity>
       <Divider style={styles.divider} /> */}
 
+        {hostelName && roomNumber && (
+          <>
+            <TouchableOpacity onPress={() => setAccoVisible(!accoVisible)}>
+              <View style={[styles.section, { justifyContent: 'space-between' }]}>
+                <Text style={styles.text}>🏨 My Accommodation</Text>
+                <Icon name={accoVisible ? 'expand-less' : 'expand-more'} size={24} color="#FFF" />
+              </View>
+            </TouchableOpacity>
+            {accoVisible && (
+              <View style={styles.accoCard}>
+                <Text style={styles.accoText}>Hostel: {hostelName}</Text>
+                <Text style={styles.accoText}>Room: {roomNumber}</Text>
+                {pinCode && <Text style={styles.accoText}>Pin: {pinCode}</Text>}
+                {hostelLatitude && hostelLongitude && (
+                  <TouchableOpacity onPress={openMaps} style={styles.navButton}>
+                    <Icon name="location-on" size={20} color="#2196F3" />
+                    <Text style={styles.navText}>Navigate to Hostel</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </>
+        )}
+
         <TouchableOpacity
           onPress={() => {
             setVisible(true);
@@ -242,6 +279,18 @@ export const Profile = () => {
                 <Text style={styles.text}>Scan QR Code </Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AccoQRCode' as never)}>
+              <View style={styles.section}>
+                <Icon
+                  name="qr-code"
+                  size={20}
+                  style={{ paddingRight: 10 }}
+                  color="#0066cc"
+                />
+                <Text style={styles.text}>Scan QR - Accommodation </Text>
+              </View>
+            </TouchableOpacity>
           </>
         ) : null}
 
@@ -256,6 +305,7 @@ export const Profile = () => {
           />
           <Text style={[styles.boldSmallText, { textAlign: 'center' }]}> LOGOUT</Text>
         </Button>
+        </ScrollView>
       </View>
     </ImageBackground>
 
@@ -455,5 +505,35 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'ProximaBold',
     fontSize: 14,
+  },
+  accoCard: {
+    backgroundColor: 'rgba(33,150,243,0.1)',
+    marginHorizontal: 50,
+    marginTop: -5,
+    marginBottom: 5,
+    padding: 16,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  accoText: {
+    color: '#FFF',
+    fontFamily: 'Proxima',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    paddingVertical: 10,
+    backgroundColor: 'rgba(33,150,243,0.2)',
+    borderRadius: 8,
+  },
+  navText: {
+    color: '#2196F3',
+    fontFamily: 'ProximaBold',
+    fontSize: 15,
+    marginLeft: 5,
   },
 });

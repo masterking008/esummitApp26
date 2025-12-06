@@ -601,7 +601,7 @@ export const getTimetable = async (email: string) => {
 
 export const checkAccomodation = async (email: string) => {
   try {
-    const response = await fetch(`${PRODUCTION_BASE_URL}/checkAccomodation/`, {
+    const response = await fetch(`${PRODUCTION_BASE_URL}/checkAccommodation/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -640,3 +640,30 @@ export const giveHospitalityKit = async (email: string) => {
     };
   }
 };
+
+const accoApiCall = async (endpoint: string, email: string) => {
+  try {
+    const response = await fetch(`${PRODUCTION_BASE_URL}/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      return { success: false, message: errorData.message || `HTTP ${response.status}` };
+    }
+    return await response.json();
+  } catch (err) {
+    return { success: false, error: err, message: 'Network error' };
+  }
+};
+
+export const manualRoomAllotment = (email: string) => accoApiCall('manualRoomAllotment/', email);
+export const toggleSummitKit = (email: string) => accoApiCall('toggleSummitKit/', email);
+export const toggleHospiKit = (email: string) => accoApiCall('toggleHospiKit/', email);
+export const toggleHospiAttendance = (email: string) => accoApiCall('toggleHospiAttendance/', email);
+export const toggleGroupSummitKit = (email: string) => accoApiCall('toggleGroupSummitKit/', email);
+export const toggleGroupHospiKit = (email: string) => accoApiCall('toggleGroupHospiKit/', email);
+export const toggleGroupHospiAttendance = (email: string) => accoApiCall('toggleGroupHospiAttendance/', email);
+export const completeIndividualProcess = (email: string) => accoApiCall('completeIndividualProcess/', email);
+export const completeGroupProcess = (email: string) => accoApiCall('completeGroupProcess/', email);

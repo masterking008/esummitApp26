@@ -128,6 +128,23 @@ export const OtpBox = (props: OtpBoxProps) => {
 
             setProfileBuilt(res.profileBuilt);
             
+            console.log('User accommodation data from API:', {
+              hostel_name: res.data.user.hostel_name,
+              room_number: res.data.user.room_number,
+              pin_code: res.data.user.pin_code,
+              latitude: res.data.user.latitude,
+              longitude: res.data.user.longitude
+            });
+
+            // Fetch accommodation data separately
+            const accoResponse = await fetch('http://192.168.0.237:8000/app26/checkAccommodation/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: res.data.user.email }),
+            });
+            const accoData = await accoResponse.json();
+            console.log('Accommodation API response:', accoData);
+            
             if (res.data.user.isadmin) {
               console.log('Admin user detected');
               setProfile({
@@ -137,6 +154,11 @@ export const OtpBox = (props: OtpBoxProps) => {
                 pass: summitPassLevel,
                 isSignedIn: true,
                 isAdmin: true,
+                hostelName: accoData?.success && accoData?.data?.hostel_allotted ? accoData.data.hostel_allotted : null,
+                roomNumber: accoData?.success && accoData?.data?.room_number ? accoData.data.room_number : null,
+                pinCode: accoData?.success && accoData?.data?.pin_code ? accoData.data.pin_code : null,
+                hostelLatitude: accoData?.success && accoData?.data?.latitude ? accoData.data.latitude : null,
+                hostelLongitude: accoData?.success && accoData?.data?.longitude ? accoData.data.longitude : null,
               });
               toast.show('Signed In as Admin', { type: 'success' });
             } else {
@@ -146,6 +168,11 @@ export const OtpBox = (props: OtpBoxProps) => {
                 name: `${res.data.user.firstName} ${res.data.user.lastName}`,
                 pass: summitPassLevel,
                 isSignedIn: true,
+                hostelName: accoData?.success && accoData?.data?.hostel_allotted ? accoData.data.hostel_allotted : null,
+                roomNumber: accoData?.success && accoData?.data?.room_number ? accoData.data.room_number : null,
+                pinCode: accoData?.success && accoData?.data?.pin_code ? accoData.data.pin_code : null,
+                hostelLatitude: accoData?.success && accoData?.data?.latitude ? accoData.data.latitude : null,
+                hostelLongitude: accoData?.success && accoData?.data?.longitude ? accoData.data.longitude : null,
               });
               toast.show('OTP verified successfully', { type: 'success' });
             }
