@@ -114,14 +114,23 @@ export const Home = () => {
         setVenues([...venues, item.venue.name]);
       }
 
-      if (
-        new Date(item.startTime) < timeNow &&
-        new Date(item.endTime) > timeNow
-      ) {
+      const startTime = new Date(item.startTime);
+      const endTime = new Date(item.endTime);
+      
+      // Set correct date based on day field
+      const eventDate = item.day === '0' ? 10 : item.day === '1' ? 11 : 12;
+      startTime.setDate(eventDate);
+      startTime.setMonth(11); // December (0-indexed)
+      startTime.setFullYear(2025);
+      endTime.setDate(eventDate);
+      endTime.setMonth(11);
+      endTime.setFullYear(2025);
+
+      if (startTime < timeNow && endTime > timeNow) {
         setOnGoingEvents(item);
-      } else if (new Date(item.startTime) > timeNow) {
+      } else if (startTime > timeNow) {
         setUpcommingEvents(item);
-      } else if (new Date(item.endTime) < timeNow) {
+      } else if (endTime < timeNow) {
         setCompletedEvents(item);
       }
     });
