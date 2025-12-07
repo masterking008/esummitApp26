@@ -2,7 +2,7 @@
   "expo": {
     "name": "E-Summit",
     "slug": "esummitapp26",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -41,7 +41,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.ecell.esummitapp26",
-      "buildNumber": "15",
+      "buildNumber": "17",
       "config": {
         "googleMapsApiKey": "AIzaSyBX4Ktw2PLyPVJJEf0AQKxwIN3b738C6JI"
       },
