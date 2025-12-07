@@ -32,6 +32,7 @@ export const Profile = () => {
   const pinCode = useProfileStore(state => state.pinCode);
   const hostelLatitude = useProfileStore(state => state.hostelLatitude);
   const hostelLongitude = useProfileStore(state => state.hostelLongitude);
+  const roommates = useProfileStore(state => state.roommates);
   const setFlow = useFlowStore(state => state.setFlow);
   const isAdmin = useProfileStore(state => state.isAdmin);
   const reset = useProfileStore(state => state.reset);
@@ -227,27 +228,12 @@ export const Profile = () => {
       <Divider style={styles.divider} /> */}
 
         {hostelName && roomNumber && (
-          <>
-            <TouchableOpacity onPress={() => setAccoVisible(!accoVisible)}>
-              <View style={[styles.section, { justifyContent: 'space-between' }]}>
-                <Text style={styles.text}>🏨 My Accommodation</Text>
-                <Icon name={accoVisible ? 'expand-less' : 'expand-more'} size={24} color="#FFF" />
-              </View>
-            </TouchableOpacity>
-            {accoVisible && (
-              <View style={styles.accoCard}>
-                <Text style={styles.accoText}>Hostel: {hostelName}</Text>
-                <Text style={styles.accoText}>Room: {roomNumber}</Text>
-                {pinCode && <Text style={styles.accoText}>Pin: {pinCode}</Text>}
-                {hostelLatitude && hostelLongitude && (
-                  <TouchableOpacity onPress={openMaps} style={styles.navButton}>
-                    <Icon name="location-on" size={20} color="#2196F3" />
-                    <Text style={styles.navText}>Navigate to Hostel</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-          </>
+          <TouchableOpacity onPress={() => navigation.navigate('Accommodation' as never)}>
+            <View style={[styles.section, { justifyContent: 'space-between' }]}>
+              <Text style={styles.text}>🏨 My Accommodation</Text>
+              <List.Icon icon="chevron-right" color="#FFF" />
+            </View>
+          </TouchableOpacity>
         )}
 
         <TouchableOpacity
@@ -535,5 +521,35 @@ const styles = StyleSheet.create({
     fontFamily: 'ProximaBold',
     fontSize: 15,
     marginLeft: 5,
+  },
+  roommatesSection: {
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  roommatesTitle: {
+    color: '#FFE100',
+    fontFamily: 'ProximaBold',
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  roommateCard: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  roommateName: {
+    color: '#FFF',
+    fontFamily: 'ProximaBold',
+    fontSize: 15,
+    marginBottom: 4,
+  },
+  roommateInfo: {
+    color: '#CCC',
+    fontFamily: 'Proxima',
+    fontSize: 13,
+    marginBottom: 2,
   },
 });

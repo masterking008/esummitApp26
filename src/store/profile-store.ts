@@ -1,5 +1,11 @@
 import { create, StateCreator } from 'zustand';
 
+interface IRoommate {
+  name: string;
+  email: string;
+  contact: string;
+}
+
 interface IProfileStates {
   image: string | null;
   name: string;
@@ -15,6 +21,7 @@ interface IProfileStates {
   pinCode: string | null;
   hostelLatitude: number | null;
   hostelLongitude: number | null;
+  roommates: IRoommate[];
 }
 
 interface IProfileMethods {
@@ -47,6 +54,7 @@ const store: StateCreator<IProfileStore> = set => ({
   pinCode: null,
   hostelLatitude: null,
   hostelLongitude: null,
+  roommates: [],
   setProfile: (profile: Partial<IProfileStates>) => set(profile),
   setName: (name: string) => set({ name }),
   setEmail: (email: string) => set({ email }),
@@ -71,6 +79,7 @@ const store: StateCreator<IProfileStore> = set => ({
       pinCode: null,
       hostelLatitude: null,
       hostelLongitude: null,
+      roommates: [],
     }),
   setIsSignedIn: (isSignedIn: boolean) => set({ isSignedIn }),
 });

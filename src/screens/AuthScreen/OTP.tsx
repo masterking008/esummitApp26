@@ -29,10 +29,14 @@ export const OTPScreen = () => {
         toast.show('Some error has occured. Try again later', {
           type: 'danger',
         });
-
       }
+    }).catch(error => {
+      console.error('Resend OTP error:', error);
+      toast.show('Network error while resending OTP', { type: 'danger' });
     });
   };
+
+
 
   useEffect(() => {
     const interval = setInterval(() => {

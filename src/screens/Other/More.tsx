@@ -173,26 +173,21 @@ export const More = () => {
               </>
             )}
 
-            {Others === undefined || Others === null ? (
-              <></>
-            ) : (
-              Others?.data.map((item, index) => (
-                <View style={styles.content1} key={index}>
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      paddingRight: 16,
-                    }}
-                    onPress={() => Linking.openURL(item.link)}
-                  >
-                    <Text style={styles.follow}>{item.name}</Text>
-                    <List.Icon icon="chevron-right" color="#FFFFFF" />
-                  </TouchableOpacity>
-                </View>
-              ))
-            )}
-
+            {Others?.data?.map((item, index) => (
+              <View style={styles.content1} key={index}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingRight: 16,
+                  }}
+                  onPress={() => Linking.openURL(item.link)}
+                >
+                  <Text style={styles.follow}>{item.name}</Text>
+                  <List.Icon icon="chevron-right" color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+            ))}
 
             <Follow />
           </ScrollView>

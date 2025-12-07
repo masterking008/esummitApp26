@@ -82,14 +82,24 @@ export const OtpBox = (props: OtpBoxProps) => {
 
     try {
       console.log('Sending OTP verification with:', { email, value }); // Debug log
-      await verifyOtpData({ email, value }).then(async (res) => {
+      
+      // Add timeout to the verification request
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 30000)
+      );
+      
+      const verificationPromise = verifyOtpData({ email, value });
+      
+      await Promise.race([verificationPromise, timeoutPromise]).then(async (res) => {
         console.log('Response received:', res); // Debug log
 
         if (!res.success) {
-          console.log('Verification failed:', res.data.error);
-          toast.show(res.data.error, { type: 'danger' });
+          const errorMsg = res.data?.error || res.error?.message || 'Verification failed';
+          console.log('Verification failed:', errorMsg);
+          toast.show(errorMsg, { type: 'danger' });
         } else {
           console.log('Verification succeeded:', res.data);
+          console.log('User object:', JSON.stringify(res.data.user, null, 2));
           await AsyncStorage.setItem('Esummit24email', email);
           // console.log('Email stored in AsyncStorage:', email);
 
@@ -128,25 +138,16 @@ export const OtpBox = (props: OtpBoxProps) => {
 
             setProfileBuilt(res.profileBuilt);
             
-            console.log('User accommodation data from API:', {
-              hostel_name: res.data.user.hostel_name,
-              room_number: res.data.user.room_number,
-              pin_code: res.data.user.pin_code,
+            console.log('Setting profile with accommodation:', {
+              hostelName: res.data.user.hostel_name,
+              roomNumber: res.data.user.room_number,
+              pinCode: res.data.user.pin_code,
               latitude: res.data.user.latitude,
-              longitude: res.data.user.longitude
+              longitude: res.data.user.longitude,
+              roommates: res.data.user.roommates
             });
-
-            // Fetch accommodation data separately
-            const accoResponse = await fetch('http://192.168.0.237:8000/app26/checkAccommodation/', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: res.data.user.email }),
-            });
-            const accoData = await accoResponse.json();
-            console.log('Accommodation API response:', accoData);
             
             if (res.data.user.isadmin) {
-              console.log('Admin user detected');
               setProfile({
                 email: res.data.user.email,
                 image: 'https://2k21.s3.ap-south-1.amazonaws.com/Ellipse+8.png',
@@ -154,11 +155,12 @@ export const OtpBox = (props: OtpBoxProps) => {
                 pass: summitPassLevel,
                 isSignedIn: true,
                 isAdmin: true,
-                hostelName: accoData?.success && accoData?.data?.hostel_allotted ? accoData.data.hostel_allotted : null,
-                roomNumber: accoData?.success && accoData?.data?.room_number ? accoData.data.room_number : null,
-                pinCode: accoData?.success && accoData?.data?.pin_code ? accoData.data.pin_code : null,
-                hostelLatitude: accoData?.success && accoData?.data?.latitude ? accoData.data.latitude : null,
-                hostelLongitude: accoData?.success && accoData?.data?.longitude ? accoData.data.longitude : null,
+                hostelName: res.data.user.hostel_name || null,
+                roomNumber: res.data.user.room_number || null,
+                pinCode: res.data.user.pin_code || null,
+                hostelLatitude: res.data.user.latitude || null,
+                hostelLongitude: res.data.user.longitude || null,
+                roommates: res.data.user.roommates || [],
               });
               toast.show('Signed In as Admin', { type: 'success' });
             } else {
@@ -168,11 +170,12 @@ export const OtpBox = (props: OtpBoxProps) => {
                 name: `${res.data.user.firstName} ${res.data.user.lastName}`,
                 pass: summitPassLevel,
                 isSignedIn: true,
-                hostelName: accoData?.success && accoData?.data?.hostel_allotted ? accoData.data.hostel_allotted : null,
-                roomNumber: accoData?.success && accoData?.data?.room_number ? accoData.data.room_number : null,
-                pinCode: accoData?.success && accoData?.data?.pin_code ? accoData.data.pin_code : null,
-                hostelLatitude: accoData?.success && accoData?.data?.latitude ? accoData.data.latitude : null,
-                hostelLongitude: accoData?.success && accoData?.data?.longitude ? accoData.data.longitude : null,
+                hostelName: res.data.user.hostel_name || null,
+                roomNumber: res.data.user.room_number || null,
+                pinCode: res.data.user.pin_code || null,
+                hostelLatitude: res.data.user.latitude || null,
+                hostelLongitude: res.data.user.longitude || null,
+                roommates: res.data.user.roommates || [],
               });
               toast.show('OTP verified successfully', { type: 'success' });
             }
@@ -189,11 +192,21 @@ export const OtpBox = (props: OtpBoxProps) => {
       });
     } catch (error) {
       console.error('Error in handleVerify:', error);
+      
+      if (error?.message === 'Request timeout') {
+        toast.show('Request timed out. Please check your internet connection and try again.', { type: 'danger' });
+      } else if (error?.message === 'Network request failed') {
+        toast.show('Network error. Please check your internet connection.', { type: 'danger' });
+      } else if (error?.message?.includes('JSON Parse')) {
+        toast.show('Server error. Please try again later.', { type: 'danger' });
+      } else {
+        toast.show('An error occurred during verification. Please try again.', { type: 'danger' });
+      }
     } finally {
-      // Re-enable the button after 15 seconds
+      // Re-enable the button after 5 seconds on error, 15 seconds on success
       setTimeout(() => {
         setButtonDisabled(false);
-      }, 15000);
+      }, 5000);
     }
   };
 

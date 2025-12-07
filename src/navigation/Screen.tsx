@@ -6,6 +6,7 @@ import { Otp, SignIn } from '../screens/AuthScreen';
 import { HomePage } from '../screens/Home';
 import { Maps } from '../screens/Map';
 import { Profile, QRCode, AccoQRCode } from '../screens/Profile';
+import { Accommodation } from '../screens/Accommodation';
 import { More, Sponsors } from '../screens/Other';
 import { Event } from '../screens/Event';
 import { useNavigation } from '@react-navigation/native';
@@ -142,6 +143,7 @@ export default function AppScreen() {
               <Stack.Screen name="YourConnect" component={YourConnect} />
               <Stack.Screen name="ShowQr" component={ShowQr} />
               <Stack.Screen name="EditProfile" component={EditProfile} />
+              <Stack.Screen name="Accommodation" component={Accommodation} />
             </>
           )}
         </>
@@ -174,6 +176,7 @@ export default function AppScreen() {
               <Stack.Screen name="YourConnect" component={YourConnect} />
               <Stack.Screen name="ShowQr" component={ShowQr} />
               <Stack.Screen name="EditProfile" component={EditProfile} />
+              <Stack.Screen name="Accommodation" component={Accommodation} />
             </>
           )}
           
